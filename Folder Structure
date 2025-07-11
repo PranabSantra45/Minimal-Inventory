@@ -1,0 +1,11 @@
+src/
+├── components/
+│   ├── Auth/
+│   ├── Charts/
+│   ├── Inventory/
+│   ├── Sales/
+│   └── Reports/
+├── pages/
+│   └── Dashboard/
+├── firebase/
+└── App.js
