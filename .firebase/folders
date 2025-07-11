@@ -1,0 +1,30 @@
+src/
+├── components/
+│   ├── Auth/
+│   │   ├── Login.js
+│   │   ├── Signup.js
+│   │   ├── AuthContext.js
+│   │   └── PrivateRoute.js
+│   ├── Inventory/
+│   │   ├── AddProduct.js
+│   │   ├── PurchaseEntry.js
+│   │   └── ProductList.js
+│   ├── Layout/
+│   │   └── NavBar.js
+│   ├── Reports/
+│   │   └── DailySalesReport.js
+│   └── Sales/
+│       └── SalesEntry.js
+│
+├── pages/
+│   └── Dashboard/
+│       ├── Dashboard.js
+│       ├── InfoCard.js         <-- (for displaying info sections)
+│       └── DashboardCard.js    <-- (for navigation or action cards)
+│
+├── firebase/
+│   └── config.js
+│
+├── App.js
+├── index.js
+└── index.css

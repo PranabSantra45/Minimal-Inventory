@@ -1,41 +1,91 @@
 // src/App.js
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Signup from './components/Auth/Signup';
 import Login from './components/Auth/Login';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/Dashboard/Dashboard';
+import AddProduct from './components/Inventory/AddProduct';
+import ProductList from './components/Inventory/ProductList';
+import SalesEntry from './components/Sales/SalesEntry';
+import DailySalesReport from './components/Reports/DailySalesReport';
 import { AuthProvider } from './components/Auth/AuthContext';
 import PrivateRoute from './components/Auth/PrivateRoute';
-
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-100 py-8 px-4">
-          <h1 className="text-3xl font-bold text-center text-indigo-600 mb-8">
-            🛒 Minimal Inventory Tool
-          </h1>
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-8 px-4">
+        <h1 className="text-3xl font-bold text-center text-indigo-600 dark:text-indigo-300 mb-8">
+          🛒 Minimal Inventory Tool
+        </h1>
 
-          <div className="max-w-2xl mx-auto space-y-6">
-            <Routes>
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <PrivateRoute>
-                    <Dashboard />
-                  </PrivateRoute>
-                }
-              />
-              <Route path="*" element={<Navigate to="/login" />} />
-            </Routes>
-          </div>
-        </div>
-      </Router>
+        <Routes>
+          {/* Public Routes with narrow container */}
+          <Route
+            path="/signup"
+            element={
+              <div className="max-w-4xl mx-auto space-y-6">
+                <Signup />
+              </div>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <div className="max-w-4xl mx-auto space-y-6">
+                <Login />
+              </div>
+            }
+          />
+
+          {/* Private Routes – Full width */}
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/add-product"
+            element={
+              <PrivateRoute>
+                <AddProduct />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <PrivateRoute>
+                <ProductList />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/sales"
+            element={
+              <PrivateRoute>
+                <SalesEntry />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/report"
+            element={
+              <PrivateRoute>
+                <DailySalesReport />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </div>
     </AuthProvider>
   );
 }

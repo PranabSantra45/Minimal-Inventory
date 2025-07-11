@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../../firebase/config';
+import { db, auth } from '../../firebase/config';
+import { Timestamp } from 'firebase/firestore';
 import {
   collection,
   onSnapshot,
@@ -67,12 +68,14 @@ const SalesEntry = () => {
       const profit = (sellPrice - purchasePrice) * qtyToSell;
 
       await addDoc(collection(db, 'sales'), {
-        product: selectedProduct,
-        quantity: qtyToSell,
-        sellingPrice: sellPrice,
-        purchasePrice,
-        profit,
-        date: new Date(),
+      userId: auth.currentUser.uid,              // ✅ Link sale to the logged-in user
+      product: selectedProduct,
+      quantity: qtyToSell,
+      sellingPrice: sellPrice,
+      purchasePrice,
+      profit,
+      totalAmount: qtyToSell * sellPrice,        // ✅ Useful for revenue stats
+      date: Timestamp.now(),                     // ✅ Firestore-native timestamp
       });
 
       setMessage('');
