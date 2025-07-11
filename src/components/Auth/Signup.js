@@ -7,6 +7,7 @@ import { doc, setDoc } from 'firebase/firestore';
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
   const [phone, setPhone] = useState('');
   const [theme, setTheme] = useState('light');
   const [message, setMessage] = useState('');
