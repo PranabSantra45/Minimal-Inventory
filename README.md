@@ -1,4 +1,4 @@
-# 🛍️ Minimal Inventory Tool
+# 🛍️ P2QR: Minimal Inventory Tool
 
 A responsive inventory and sales management system for small shops. Built using **React**, **Firebase**, and **Tailwind CSS**. Supports real-time data tracking, charts, and dark mode.
 ---
