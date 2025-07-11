@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { auth, db } from '../../firebase/config';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
 import { doc, setDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
   const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
   const [theme, setTheme] = useState('light');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
@@ -20,6 +19,7 @@ const Signup = () => {
       const user = userCredential.user;
 
       await setDoc(doc(db, 'users', user.uid), {
+        email,
         phone,
         theme,
         createdAt: new Date(),
@@ -34,53 +34,60 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 px-4">
-      <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">📝 Sign Up</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-center text-indigo-600 dark:text-indigo-400">📝 Sign Up</h2>
+
         <form onSubmit={handleSignup} className="space-y-4">
           <input
             type="email"
             placeholder="Email"
-            className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-black dark:text-white focus:outline-none"
+            className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
-            type="password"
-            placeholder="Password"
-            className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-black dark:text-white focus:outline-none"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            type="text"
+            placeholder="Phone Number (10 digits)"
+            className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            pattern="\d{10}"
             required
           />
           <input
-            type="tel"
-            placeholder="Phone Number"
-            className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-black dark:text-white focus:outline-none"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            type="password"
+            placeholder="Password"
+            className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
           <select
             value={theme}
             onChange={(e) => setTheme(e.target.value)}
-            className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 text-black dark:text-white"
+            className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
           >
             <option value="light">☀️ Light Mode</option>
             <option value="dark">🌙 Dark Mode</option>
           </select>
+
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-md transition duration-300"
           >
             Sign Up
           </button>
         </form>
-        {message && <p className="mt-4 text-center text-sm text-red-500">{message}</p>}
-        <p className="text-sm mt-4 text-center">
+
+        {message && (
+          <p className="mt-4 text-sm text-center text-red-500">{message}</p>
+        )}
+
+        <p className="mt-6 text-center text-sm text-gray-700 dark:text-gray-300">
           Already have an account?{' '}
-          <a href="/login" className="text-blue-500 hover:underline">Login</a>
+          <a href="/login" className="text-indigo-500 hover:underline">Login</a>
         </p>
       </div>
     </div>
