@@ -14,6 +14,11 @@ A responsive inventory and sales management system for small shops. Built using 
 - 🌙 Light/Dark Theme Toggle
 
 ---
+View Live Demo !!
+[![View Live](https://img.shields.io/badge/Live-Demo-green)](https://minimal-inventory-project.web.app)
+
+---
+
 
 ## 📸 Dashboard Preview
 <img width="1920" height="1080" alt="Screenshot (73)" src="https://github.com/user-attachments/assets/1ba360bf-1154-4ec6-8ac5-39698cf78c4a" />
