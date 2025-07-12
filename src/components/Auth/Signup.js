@@ -4,7 +4,7 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   RecaptchaVerifier,
-  signInWithPhoneNumber
+  signInWithPhoneNumber,
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -21,26 +21,27 @@ const Signup = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Prevent re-rendering recaptcha
     if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
-        size: 'invisible',
-        callback: (response) => {
-          // Do nothing, just needed for reCAPTCHA
-        }
-      }, auth);
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        'recaptcha-container',
+        {
+          size: 'invisible',
+          callback: () => {},
+        },
+        auth
+      );
+      window.recaptchaVerifier.render();
     }
   }, []);
 
   const sendOTP = async () => {
     if (!/^\d{10}$/.test(phone)) {
-      return setMessage('❌ Please enter a valid 10-digit phone number.');
+      return setMessage('❌ Invalid phone number.');
     }
 
     try {
       const appVerifier = window.recaptchaVerifier;
-      const fullPhone = '+91' + phone;
-      const confirmation = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
+      const confirmation = await signInWithPhoneNumber(auth, '+91' + phone, appVerifier);
       setConfirmationResult(confirmation);
       setOtpSent(true);
       setMessage('📨 OTP sent to your phone.');
@@ -53,13 +54,13 @@ const Signup = () => {
     e.preventDefault();
 
     if (!phone || !password || !otp || !confirmationResult) {
-      return setMessage('❌ Please complete all required fields and verify your phone.');
+      return setMessage('❌ Please complete all required fields and OTP verification.');
     }
 
     try {
       await confirmationResult.confirm(otp);
-
       const fallbackEmail = email || `${phone}@minimalapp.in`;
+
       const userCredential = await createUserWithEmailAndPassword(auth, fallbackEmail, password);
       const user = userCredential.user;
 
@@ -74,9 +75,10 @@ const Signup = () => {
         createdAt: new Date(),
       });
 
-      setMessage(email
-        ? '✅ Signup successful! Verification link sent to your email.'
-        : '✅ Signup successful!'
+      setMessage(
+        email
+          ? '✅ Signup successful! Verification link sent to your email.'
+          : '✅ Signup successful!'
       );
 
       setTimeout(() => navigate('/login'), 3000);
@@ -107,7 +109,7 @@ const Signup = () => {
             maxLength={10}
             required
           />
-          {!otpSent ? (
+          {!otpSent && (
             <button
               type="button"
               onClick={sendOTP}
@@ -115,7 +117,8 @@ const Signup = () => {
             >
               Send OTP
             </button>
-          ) : (
+          )}
+          {otpSent && (
             <input
               type="text"
               placeholder="Enter OTP"
@@ -152,9 +155,7 @@ const Signup = () => {
 
         <div id="recaptcha-container"></div>
 
-        {message && (
-          <p className="mt-4 text-sm text-center text-red-500">{message}</p>
-        )}
+        {message && <p className="mt-4 text-sm text-center text-red-500">{message}</p>}
 
         <p className="mt-6 text-center text-sm text-gray-700 dark:text-gray-300">
           Already have an account?{' '}
