@@ -56,7 +56,7 @@ const Signup = () => {
           />
           <input
             type="text"
-            placeholder="Phone Number (optional)"
+            placeholder="Phone Number"
             className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
