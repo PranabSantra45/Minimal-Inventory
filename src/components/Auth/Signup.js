@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../firebase/config';
 import {
   createUserWithEmailAndPassword,
@@ -20,17 +20,24 @@ const Signup = () => {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Prevent re-rendering recaptcha
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+        size: 'invisible',
+        callback: (response) => {
+          // Do nothing, just needed for reCAPTCHA
+        }
+      }, auth);
+    }
+  }, []);
+
   const sendOTP = async () => {
     if (!/^\d{10}$/.test(phone)) {
-      return setMessage('❌ Invalid phone number.');
+      return setMessage('❌ Please enter a valid 10-digit phone number.');
     }
 
     try {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => sendOTP(),
-      });
-
       const appVerifier = window.recaptchaVerifier;
       const fullPhone = '+91' + phone;
       const confirmation = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
@@ -46,24 +53,20 @@ const Signup = () => {
     e.preventDefault();
 
     if (!phone || !password || !otp || !confirmationResult) {
-      return setMessage('❌ Please fill required fields and complete phone verification.');
+      return setMessage('❌ Please complete all required fields and verify your phone.');
     }
 
     try {
-      // ✅ Step 1: Verify OTP
       await confirmationResult.confirm(otp);
 
-      // ✅ Step 2: Create temp user with dummy email (since email is optional)
       const fallbackEmail = email || `${phone}@minimalapp.in`;
       const userCredential = await createUserWithEmailAndPassword(auth, fallbackEmail, password);
       const user = userCredential.user;
 
-      // ✅ Step 3: Send email verification only if email is given
       if (email) {
         await sendEmailVerification(user);
       }
 
-      // ✅ Step 4: Save user details to Firestore
       await setDoc(doc(db, 'users', user.uid), {
         email: email || null,
         phone,
@@ -71,10 +74,9 @@ const Signup = () => {
         createdAt: new Date(),
       });
 
-      setMessage(
-        email
-          ? '✅ Signup successful! A verification link has been sent to your email.'
-          : '✅ Signup successful!'
+      setMessage(email
+        ? '✅ Signup successful! Verification link sent to your email.'
+        : '✅ Signup successful!'
       );
 
       setTimeout(() => navigate('/login'), 3000);
@@ -96,7 +98,6 @@ const Signup = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-
           <input
             type="text"
             placeholder="Phone Number (10 digits)"
@@ -106,7 +107,7 @@ const Signup = () => {
             maxLength={10}
             required
           />
-          {!otpSent && (
+          {!otpSent ? (
             <button
               type="button"
               onClick={sendOTP}
@@ -114,8 +115,7 @@ const Signup = () => {
             >
               Send OTP
             </button>
-          )}
-          {otpSent && (
+          ) : (
             <input
               type="text"
               placeholder="Enter OTP"
