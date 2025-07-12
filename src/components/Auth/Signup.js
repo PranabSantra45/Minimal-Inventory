@@ -45,26 +45,37 @@ const Signup = () => {
   const verifyAndSignup = async (e) => {
     e.preventDefault();
 
-    if (!email || !password || !otp || !confirmationResult) {
-      return setMessage('❌ Please fill all fields and complete phone verification.');
+    if (!phone || !password || !otp || !confirmationResult) {
+      return setMessage('❌ Please fill required fields and complete phone verification.');
     }
 
     try {
+      // ✅ Step 1: Verify OTP
       await confirmationResult.confirm(otp);
 
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // ✅ Step 2: Create temp user with dummy email (since email is optional)
+      const fallbackEmail = email || `${phone}@minimalapp.in`;
+      const userCredential = await createUserWithEmailAndPassword(auth, fallbackEmail, password);
       const user = userCredential.user;
 
-      await sendEmailVerification(user);
+      // ✅ Step 3: Send email verification only if email is given
+      if (email) {
+        await sendEmailVerification(user);
+      }
 
+      // ✅ Step 4: Save user details to Firestore
       await setDoc(doc(db, 'users', user.uid), {
-        email,
+        email: email || null,
         phone,
         theme,
         createdAt: new Date(),
       });
 
-      setMessage('✅ Signup successful! A verification link has been sent to your email. Please verify before logging in.');
+      setMessage(
+        email
+          ? '✅ Signup successful! A verification link has been sent to your email.'
+          : '✅ Signup successful!'
+      );
 
       setTimeout(() => navigate('/login'), 3000);
     } catch (error) {
@@ -80,12 +91,12 @@ const Signup = () => {
         <form onSubmit={verifyAndSignup} className="space-y-4">
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email (optional)"
             className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
+
           <input
             type="text"
             placeholder="Phone Number (10 digits)"
