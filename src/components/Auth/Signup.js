@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { auth, db } from '../../firebase/config';
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   RecaptchaVerifier,
-  signInWithPhoneNumber,
+  signInWithPhoneNumber
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -20,28 +20,20 @@ const Signup = () => {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        'recaptcha-container',
-        {
-          size: 'invisible',
-          callback: () => {},
-        },
-        auth
-      );
-      window.recaptchaVerifier.render();
-    }
-  }, []);
-
   const sendOTP = async () => {
     if (!/^\d{10}$/.test(phone)) {
       return setMessage('❌ Invalid phone number.');
     }
 
     try {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: () => sendOTP(),
+      });
+
       const appVerifier = window.recaptchaVerifier;
-      const confirmation = await signInWithPhoneNumber(auth, '+91' + phone, appVerifier);
+      const fullPhone = '+91' + phone;
+      const confirmation = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
       setConfirmationResult(confirmation);
       setOtpSent(true);
       setMessage('📨 OTP sent to your phone.');
@@ -53,15 +45,17 @@ const Signup = () => {
   const verifyAndSignup = async (e) => {
     e.preventDefault();
 
-    if (!phone || !password || !otp || !confirmationResult) {
-      return setMessage('❌ Please complete all required fields and OTP verification.');
+    if (!phone || !otp || !confirmationResult || !password) {
+      return setMessage('❌ Please complete phone verification and fill all required fields.');
     }
 
     try {
       await confirmationResult.confirm(otp);
-      const fallbackEmail = email || `${phone}@minimalapp.in`;
 
-      const userCredential = await createUserWithEmailAndPassword(auth, fallbackEmail, password);
+      // Use a placeholder email if not provided
+      const finalEmail = email || `${phone}@minventory.fake`;
+
+      const userCredential = await createUserWithEmailAndPassword(auth, finalEmail, password);
       const user = userCredential.user;
 
       if (email) {
@@ -69,7 +63,7 @@ const Signup = () => {
       }
 
       await setDoc(doc(db, 'users', user.uid), {
-        email: email || null,
+        email: email || '',
         phone,
         theme,
         createdAt: new Date(),
@@ -77,7 +71,7 @@ const Signup = () => {
 
       setMessage(
         email
-          ? '✅ Signup successful! Verification link sent to your email.'
+          ? '✅ Signup successful! A verification link has been sent to your email. Please verify before logging in.'
           : '✅ Signup successful!'
       );
 
@@ -155,7 +149,9 @@ const Signup = () => {
 
         <div id="recaptcha-container"></div>
 
-        {message && <p className="mt-4 text-sm text-center text-red-500">{message}</p>}
+        {message && (
+          <p className="mt-4 text-sm text-center text-red-500">{message}</p>
+        )}
 
         <p className="mt-6 text-center text-sm text-gray-700 dark:text-gray-300">
           Already have an account?{' '}
