@@ -1,5 +1,3 @@
-// src/App.js
-
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -22,7 +20,7 @@ function App() {
         </h1>
 
         <Routes>
-          {/* Public Routes with narrow container */}
+          {/* 🔓 Public Routes */}
           <Route
             path="/signup"
             element={
@@ -40,7 +38,7 @@ function App() {
             }
           />
 
-          {/* Private Routes – Full width */}
+          {/* 🔐 Private Routes */}
           <Route
             path="/dashboard"
             element={
@@ -82,8 +80,8 @@ function App() {
             }
           />
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/login" />} />
+          {/* 🧭 Catch-all fallback */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </AuthProvider>

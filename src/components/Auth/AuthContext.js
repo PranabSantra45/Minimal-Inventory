@@ -1,23 +1,27 @@
-// src/components/Auth/AuthContext.js
-
 import React, { useContext, useState, useEffect, createContext } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 
+// Create Context
 const AuthContext = createContext();
 
+// Custom Hook
 export const useAuth = () => useContext(AuthContext);
 
+// Provider Component
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true); // important to prevent premature redirects
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!auth) return;
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
-      setLoading(false); // allow app to render once auth is checked
+      setLoading(false);
     });
 
+    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 

@@ -18,6 +18,7 @@ const Login = () => {
     try {
       let actualEmail = identifier;
 
+      // If identifier is a 10-digit phone number
       if (/^\d{10}$/.test(identifier)) {
         const snapshot = await getDocs(collection(db, 'users'));
         let matchedEmail = null;
@@ -30,7 +31,7 @@ const Login = () => {
         });
 
         if (!matchedEmail) {
-          throw new Error('❌ Phone number not found. Please check again.');
+          throw new Error('Phone number not found. Please check again.');
         }
 
         actualEmail = matchedEmail;
@@ -39,20 +40,23 @@ const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, actualEmail, password);
       const user = userCredential.user;
       const userDocRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
+      const userDocSnap = await getDoc(userDocRef);
 
-      if (shopName || shopCategory || !userDoc.exists()) {
-        const updatedShopDetails = {
-          shopName: shopName || userDoc.data()?.shopName || 'My Shop',
-          shopCategory: shopCategory || userDoc.data()?.shopCategory || 'Other',
-          createdAt: userDoc.exists() ? userDoc.data().createdAt : new Date(),
-          theme: userDoc.data()?.theme || 'light',
-        };
-        await setDoc(userDocRef, updatedShopDetails);
-      }
+      // Create or update user's shop details
+      const newShopData = {
+        shopName: shopName || userDocSnap.data()?.shopName || 'My Shop',
+        shopCategory: shopCategory || userDocSnap.data()?.shopCategory || 'Other',
+        createdAt: userDocSnap.exists() ? userDocSnap.data().createdAt : new Date(),
+        theme: userDocSnap.data()?.theme || 'light',
+        email: user.email,
+        phone: userDocSnap.data()?.phone || '',
+      };
 
-      const userTheme = userDoc.data()?.theme || 'light';
-      document.documentElement.classList.toggle('dark', userTheme === 'dark');
+      await setDoc(userDocRef, newShopData);
+
+      // Apply theme
+      const theme = newShopData.theme;
+      document.documentElement.classList.toggle('dark', theme === 'dark');
 
       setMessage('✅ Login successful!');
       navigate('/dashboard');
@@ -113,7 +117,9 @@ const Login = () => {
         </form>
 
         {message && (
-          <p className="mt-4 text-sm text-center text-red-500">{message}</p>
+          <p className={`mt-4 text-sm text-center ${message.startsWith('✅') ? 'text-green-600' : 'text-red-500'}`}>
+            {message}
+          </p>
         )}
 
         <p className="mt-6 text-center text-sm text-gray-700 dark:text-gray-300">

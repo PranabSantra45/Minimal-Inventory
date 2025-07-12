@@ -14,17 +14,25 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      if (!email && !phone) {
+        setMessage('❌ Please enter either Email or Phone number');
+        return;
+      }
+
+      const tempEmail = email || `${phone}@example.com`; // Create dummy email if phone only
+      const userCredential = await createUserWithEmailAndPassword(auth, tempEmail, password);
       const user = userCredential.user;
 
       await setDoc(doc(db, 'users', user.uid), {
-        email,
-        phone,
+        email: email || '',
+        phone: phone || '',
         theme,
         createdAt: new Date(),
       });
 
+      // Apply theme
       document.documentElement.classList.toggle('dark', theme === 'dark');
       setMessage('✅ Account created successfully!');
       navigate('/dashboard');
@@ -41,20 +49,18 @@ const Signup = () => {
         <form onSubmit={handleSignup} className="space-y-4">
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email (optional)"
             className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
           <input
             type="text"
-            placeholder="Phone Number (10 digits)"
+            placeholder="Phone Number (optional)"
             className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             pattern="\d{10}"
-            required
           />
           <input
             type="password"
@@ -82,7 +88,9 @@ const Signup = () => {
         </form>
 
         {message && (
-          <p className="mt-4 text-sm text-center text-red-500">{message}</p>
+          <p className={`mt-4 text-sm text-center ${message.startsWith('✅') ? 'text-green-600' : 'text-red-500'}`}>
+            {message}
+          </p>
         )}
 
         <p className="mt-6 text-center text-sm text-gray-700 dark:text-gray-300">
