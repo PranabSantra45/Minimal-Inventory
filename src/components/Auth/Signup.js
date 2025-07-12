@@ -1,41 +1,72 @@
 import React, { useState } from 'react';
 import { auth, db } from '../../firebase/config';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  RecaptchaVerifier,
+  signInWithPhoneNumber
+} from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
   const [password, setPassword] = useState('');
   const [theme, setTheme] = useState('light');
   const [message, setMessage] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState(null);
   const navigate = useNavigate();
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
+  const sendOTP = async () => {
+    if (!/^\d{10}$/.test(phone)) {
+      return setMessage('❌ Invalid phone number.');
+    }
 
     try {
-      if (!email && !phone) {
-        setMessage('❌ Please enter either Email or Phone number');
-        return;
-      }
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: () => sendOTP(),
+      });
 
-      const tempEmail = email || `${phone}@example.com`; // Create dummy email if phone only
-      const userCredential = await createUserWithEmailAndPassword(auth, tempEmail, password);
+      const appVerifier = window.recaptchaVerifier;
+      const fullPhone = '+91' + phone;
+      const confirmation = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
+      setConfirmationResult(confirmation);
+      setOtpSent(true);
+      setMessage('📨 OTP sent to your phone.');
+    } catch (error) {
+      setMessage(`❌ ${error.message}`);
+    }
+  };
+
+  const verifyAndSignup = async (e) => {
+    e.preventDefault();
+
+    if (!email || !password || !otp || !confirmationResult) {
+      return setMessage('❌ Please fill all fields and complete phone verification.');
+    }
+
+    try {
+      await confirmationResult.confirm(otp);
+
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      await sendEmailVerification(user);
+
       await setDoc(doc(db, 'users', user.uid), {
-        email: email || '',
-        phone: phone || '',
+        email,
+        phone,
         theme,
         createdAt: new Date(),
       });
 
-      // Apply theme
-      document.documentElement.classList.toggle('dark', theme === 'dark');
-      setMessage('✅ Account created successfully!');
-      navigate('/dashboard');
+      setMessage('✅ Signup successful! A verification link has been sent to your email. Please verify before logging in.');
+
+      setTimeout(() => navigate('/login'), 3000);
     } catch (error) {
       setMessage(`❌ ${error.message}`);
     }
@@ -46,22 +77,43 @@ const Signup = () => {
       <div className="w-full max-w-md bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-6 text-center text-indigo-600 dark:text-indigo-400">📝 Sign Up</h2>
 
-        <form onSubmit={handleSignup} className="space-y-4">
+        <form onSubmit={verifyAndSignup} className="space-y-4">
           <input
             type="email"
-            placeholder="Email (optional)"
+            placeholder="Email"
             className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <input
             type="text"
-            placeholder="Phone Number (optional)"
+            placeholder="Phone Number (10 digits)"
             className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            pattern="\d{10}"
+            maxLength={10}
+            required
           />
+          {!otpSent && (
+            <button
+              type="button"
+              onClick={sendOTP}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 rounded-md transition duration-300"
+            >
+              Send OTP
+            </button>
+          )}
+          {otpSent && (
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+            />
+          )}
           <input
             type="password"
             placeholder="Password"
@@ -87,10 +139,10 @@ const Signup = () => {
           </button>
         </form>
 
+        <div id="recaptcha-container"></div>
+
         {message && (
-          <p className={`mt-4 text-sm text-center ${message.startsWith('✅') ? 'text-green-600' : 'text-red-500'}`}>
-            {message}
-          </p>
+          <p className="mt-4 text-sm text-center text-red-500">{message}</p>
         )}
 
         <p className="mt-6 text-center text-sm text-gray-700 dark:text-gray-300">
