@@ -1,4 +1,4 @@
-# 🧾 Minimal Inventory Tool for Small Shops
+# 🧾 P2QR Minimal Inventory
 
 A lightweight, modern inventory management web app built with **React + Firebase**, designed specifically to help **local shop owners** manage their inventory, sales, and expenses with ease. Whether you're running a grocery, clothing store, pharmacy, or electronics shop — this tool gives you full control at your fingertips.
 
@@ -33,6 +33,17 @@ This app is a **Minimal Viable Product** (MVP), ready for usage and further enha
 ✅ Stable Core Features  
 🚧 Advanced Features Coming Soon  
 💡 Feedback Driven Improvements
+
+---
+
+## Preview
+
+<img width="1920" height="1080" alt="Screenshot (73)" src="https://github.com/user-attachments/assets/2bb24078-e575-4bdc-96a3-851d81833f3c" />
+<img width="1920" height="1080" alt="Screenshot (75)" src="https://github.com/user-attachments/assets/e25229a0-36cc-4310-9206-0a7e870f6cf0" />
+<img width="1920" height="1080" alt="Screenshot (76)" src="https://github.com/user-attachments/assets/c399f636-da45-48da-8031-5a432e17629f" />
+<img width="1920" height="1080" alt="Screenshot (77)" src="https://github.com/user-attachments/assets/6737d5e0-26cf-425c-ab27-bc512d682730" />
+<img width="1920" height="1080" alt="Screenshot (78)" src="https://github.com/user-attachments/assets/9ee7efb1-126a-4dd8-8c10-b148d4233636" />
+<img width="1920" height="1080" alt="Screenshot (79)" src="https://github.com/user-attachments/assets/264b7006-fe2b-49cc-bee6-66ab6f6f8cbf" />
 
 ---
 
