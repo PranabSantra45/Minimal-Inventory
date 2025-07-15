@@ -6,7 +6,7 @@ A lightweight, modern inventory management web app built with **React + Firebase
 
 ## ✨ Live Demo
 
-[![Live Demo](https://img.shields.io/badge/demo-online-green)](https://minimal-inventory-project.web.app)
+[![Live Demo](https://img.shields.io/badge/Demo-Online-green)](https://minimal-inventory-project.web.app)
 
 ---
 
@@ -57,6 +57,7 @@ This app is a **Minimal Viable Product** (MVP), ready for usage and further enha
 | **Firestore DB** | Cloud-based NoSQL database for storage |
 | **Firebase Hosting** | Free hosting & CI/CD deployment |
 | **Recharts** | Sales & profit data visualization |
+| **npm** | To manage JavaScript packages and dependencies |
 
 ---
 
@@ -64,20 +65,25 @@ This app is a **Minimal Viable Product** (MVP), ready for usage and further enha
 
 This project is built not just as a tool, but as a **mission** — to empower local shopkeepers with digital inventory capabilities who otherwise depend on notebooks or memory.
 
-> "Purpose is what turns a tool into a mission."  
-> — Inspired by a mentor's words 🧠
+> "Purpose is what turns a tool into a mission."
+> "To turn the local society into the Digital system."
+> — Inspired by real life problems 
 
 ---
 
 ## 🧠 What I Learned
 
+- Firebase for Authentication 
+- Firebase clode storage for NoSQL database
+- Vibing the Backend
 - Firebase integration for CRUD and real-time updates
+- Deployment 
 - OTP-based login using phone number (with fallback to email)
 - Theme toggling (dark/light mode)
 - Managing UI state in complex forms
 - Structuring scalable frontend for SaaS apps
 - Responsive design with Tailwind and minimal components
-
+- Working and Connecting of SaaS platforms 
 ---
 
 ## 🗺️ Roadmap
@@ -90,6 +96,7 @@ This project is built not just as a tool, but as a **mission** — to empower lo
 - [ ] 📲 PWA (Progressive Web App) for offline support
 - [ ] 🔄 Restore from backup
 - [ ] 📤 Admin approval for stock changes
+- [ ] 📊 Accuracy of the Dashboard 
 
 ---
 
@@ -101,7 +108,7 @@ This project is built not just as a tool, but as a **mission** — to empower lo
 
 ## 🤝 Contributing
 
-Contributions, suggestions, and feedback are most welcome!
+Contributions, suggestions, collaboration and feedback are most welcome!
 
 ```bash
 git clone https://github.com/your-username/minimal-inventory-tool.git
