@@ -39,7 +39,7 @@ This app is a **Minimal Viable Product** (MVP), ready for usage and further enha
 ## Preview
 
 <img width="1920" height="1080" alt="Screenshot (73)" src="https://github.com/user-attachments/assets/2bb24078-e575-4bdc-96a3-851d81833f3c" />
-<img width="1920" height="1080" alt="Screenshot (75)" src="https://github.com/user-attachments/assets/e25229a0-36cc-4310-9206-0a7e870f6cf0" />
+<img width="1920" height="1080" alt="Screenshot (81)" src="https://github.com/user-attachments/assets/b5c4977e-41f5-4eda-9700-11c799efd775" />
 <img width="1920" height="1080" alt="Screenshot (76)" src="https://github.com/user-attachments/assets/c399f636-da45-48da-8031-5a432e17629f" />
 <img width="1920" height="1080" alt="Screenshot (77)" src="https://github.com/user-attachments/assets/6737d5e0-26cf-425c-ab27-bc512d682730" />
 <img width="1920" height="1080" alt="Screenshot (78)" src="https://github.com/user-attachments/assets/9ee7efb1-126a-4dd8-8c10-b148d4233636" />
